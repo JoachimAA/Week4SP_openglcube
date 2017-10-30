@@ -11,7 +11,8 @@ class SceneBasic : public Scene
 {
 private:
 	int width, height;
-	GLuint vboHandles[2];
+	GLuint vboHandles[3];
+	GLuint numOfIndices;
 
 	GLuint vaoHandle;
 	GLuint programHandle;

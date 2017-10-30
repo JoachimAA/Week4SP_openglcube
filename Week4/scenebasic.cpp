@@ -127,18 +127,64 @@ void SceneBasic::initScene()
     linkMe(vertShader, fragShader);
 
     /////////////////// Create the VBO ////////////////////
-    float positionData[] = {
-        -0.8f, -0.8f, 0.0f,
-         0.8f, -0.8f, 0.0f,
-         0.0f,  0.8f, 0.0f };
+	float positionData[] = {
+		//-0.8f, -0.8f, 0.0f,
+		// 0.8f, -0.8f, 0.0f,
+		// 0.0f,  0.8f, 0.0f
+
+		 //across then down 
+
+			  -0.2f, 0.9f, 0.0f,
+			   0.2f, 0.9f, 0.0f,
+			  -0.2f, 0.5f, 0.0f,
+			   0.2f, 0.5f, 0.0f,
+			  -0.2f, 0.1f, 0.0f,
+			   0.2f, 0.1f, 0.0f,
+			  -0.2f,-0.3f, 0.0f,
+			   0.2f,-0.3f, 0.0f,
+			  -0.2f,-0.7f, 0.0f,
+			   0.2f,-0.7f, 0.0f,
+			   0.6f,-0.3f, 0.0f,
+			   0.6f,-0.7f, 0.0f,
+			  -0.6f,-0.3f, 0.0f,
+			  -0.6f,-0.7f, 0.0f
+	};
+
+
+
     float colourData[] = {
         1.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f };
+		0.0f, 0.0f, 1.0f,
+	    1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f
+	};
 
-	
+	GLuint indices[] = {
+		0,1,2,
+		1,2,3,
+		2,3,4,
+		3,4,5,
+		4,5,6,
+		5,6,7,
+		6,7,8,
+		7,8,9,
+		7,10,9,
+		10,9,11,
+		12,6,13,
+		6,13,8
+	};
 
-
+	numOfIndices = 42;
 
 #ifdef SINGLE_BUFFER
 	// Create and set-up the vertex array object using an interlaced buffer
@@ -170,17 +216,20 @@ void SceneBasic::initScene()
 #else
 
     // Create and populate the buffer objects using separate buffers
-    GLuint vboHandles[2];
-    gl::GenBuffers(2, vboHandles);
+   // GLuint vboHandles[2];
+    gl::GenBuffers(3, vboHandles);
     GLuint positionBufferHandle = vboHandles[0];
     GLuint colorBufferHandle = vboHandles[1];
+	GLuint indexBufferHandle = vboHandles[2];
 
     gl::BindBuffer(gl::ARRAY_BUFFER, positionBufferHandle);
-    gl::BufferData(gl::ARRAY_BUFFER, 9 * sizeof(float), positionData, gl::STATIC_DRAW);
+    gl::BufferData(gl::ARRAY_BUFFER, numOfIndices * sizeof(float), positionData, gl::STATIC_DRAW);
 
     gl::BindBuffer(gl::ARRAY_BUFFER, colorBufferHandle);
-    gl::BufferData(gl::ARRAY_BUFFER, 9 * sizeof(float), colourData, gl::STATIC_DRAW);
+    gl::BufferData(gl::ARRAY_BUFFER, numOfIndices * sizeof(float), colourData, gl::STATIC_DRAW);
 
+	gl::BindBuffer(gl::ARRAY_BUFFER, indexBufferHandle);
+	gl::BufferData(gl::ARRAY_BUFFER, numOfIndices * sizeof(GLuint), indices, gl::STATIC_DRAW);
     // Create and set-up the vertex array object
     gl::GenVertexArrays( 1, &vaoHandle );
     gl::BindVertexArray(vaoHandle);
@@ -251,9 +300,10 @@ void SceneBasic::update( float t )
 void SceneBasic::render()
 {
     gl::Clear(gl::COLOR_BUFFER_BIT);
-
+	GLuint indexBufferHandle = vboHandles[2];
     gl::BindVertexArray(vaoHandle);
-    gl::DrawArrays(gl::TRIANGLES, 0, 3 );
+	gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, indexBufferHandle);
+	gl::DrawElements(gl::TRIANGLES, numOfIndices, gl::UNSIGNED_INT, (void*)0);
 }
 
 void SceneBasic::resize(int w, int h)
